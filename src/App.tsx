@@ -1,43 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState, useRef, useEffect } from 'react';
+import Item from './Item';
 import './App.css'
-import Item from './item.tsx'
 
-function App() {
- 
-  const initialTodos: string[] = [
-    "sleep",
-    "learn",
-    "sleep",
-  ];
-
-  const [todos, setTodos] = useState(JSON.parse(localStrogare.getItem('todos') ?? JSON.stringify(initialTodos)));
-  const addTodoHandler = (e) => setTodos([...todos, e.target.value]);
-
-  useEffect(() => {
-    localStrogare.setItem ("todos", JSON.stringify(todos));
-  }, [todos]);
-  const inputRef = useRef<any>(null)
+const App = () => {
+  const initialTodos = ['sleep', 'learn', 'sleep'];
+  const [todos, setTodos] = useState(initialTodos);
+  const inputRef = useRef<any>(null);
   
+
+  const addTodoHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputRef.current.value) {
+      setTodos([...todos, inputRef.current.value]);
+      inputRef.current.value = '';
+    }
+  };
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
   return (
-
+    <>
       <div>
-       {todos.map((el: string, index) => {
-        return <div key={index}><Item />{el}</div>
-       })};
-        
-       <form>
-        <input type='text' placeholder='Ввести задачу'/> 
-        <button type= 'submit'
-        onClick={addTodoHandler} type= 'submit'>
-          Добавить
-          </button>
+        <form>
+        <input type="text" placeholder="Ввести задачу" ref={inputRef} />
+        <button type="submit" onClick={addTodoHandler}>Добавить</button>
         </form>
-
-        {todos.length >= 4 && <p> Всего задач: {todos.length}</p>}
-      </div>
-  )
+    
+        {todos.map((el, index) => (
+        <Item key={index} el={el} />
+      ))}
+      {todos.length >= 4 && <div>Всего задач: {todos.length}</div>}
+    </div>
+    </>
+  );
 }
 
 export default App
